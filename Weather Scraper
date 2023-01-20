@@ -1,0 +1,59 @@
+import requests
+from bs4 import BeautifulSoup as bs
+from gtts import gTTS
+from playsound import playsound
+import os
+
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
+LANGUAGE = "en-US,en;q=0.5"
+
+session = requests.Session()
+session.headers['User-Agent'] = USER_AGENT
+session.headers['Accept-Language'] = LANGUAGE
+session.headers['Content-Language'] = LANGUAGE
+
+search = "weather "
+s1=str(input("ENTER CITY : "))
+url = "https://www.google.com/search?q="+search+s1
+html = session.get(url)
+soup = bs(html.text, "html.parser")
+
+r=[]
+print("Fetching weather updates...")
+loc = soup.find("div", attrs={"id": "wob_loc"}).text
+a="At "+loc
+r.append(a)
+dt = soup.find("div", attrs={"id": "wob_dts"}).text
+m=dt.split(",")
+b="Today is "+m[0]
+r.append(b)
+
+wea = soup.find("span", attrs={"id": "wob_dc"}).text
+d="Weather is "+wea
+r.append(d)
+temp = soup.find("span", attrs={"id": "wob_tm"}).text
+e="Temperature feels like "+temp+"°Celcius"
+r.append(e)
+pre = soup.find("span", attrs={"id": "wob_pp"}).text
+f="Precipitation is "+pre
+r.append(f)
+hum = soup.find("span", attrs={"id": "wob_hm"}).text
+g="Humidity is "+hum
+r.append(g)
+wind = soup.find("span", attrs={"id": "wob_ws"}).text
+h="Wind is gusting at "+wind
+r.append(h)
+
+for ele in r:
+    print(ele)
+    obj = gTTS(text=ele, lang='en', slow=False)
+    obj.save("welcome.mp3")
+    open("welcome.mp3")
+    playsound("welcome.mp3")
+    os.remove("welcome.mp3")
+print("Thank you")
+end=gTTS(text='Thank you', lang='en', slow=False)
+end.save("welcome.mp3")
+open("welcome.mp3")
+playsound("welcome.mp3")
+os.remove("welcome.mp3")
